@@ -37,17 +37,17 @@ function startGame() {
 
 var myGameArea = {
   canvas: document.createElement("canvas"),
-  start: function() {
+  start: function () {
     this.canvas.width = 480;
     this.canvas.height = 270;
     this.context = this.canvas.getContext("2d");
     document.body.insertBefore(this.canvas, document.body.childNodes[0]);
     this.interval = setInterval(updateGameArea, 20);
   },
-  stop: function() {
+  stop: function () {
     clearInterval(this.interval);
   },
-  clear: function() {
+  clear: function () {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 };
@@ -62,33 +62,40 @@ function Bird(width, height, color, x, y, type) {
   this.speedY = 0;
   this.gravity = 0.05;
   this.gravitySpeed = 0;
-  this.update = function() {
+  this.update = function () {
     ctx = myGameArea.context;
     ctx.fillStyle = color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
   };
-  this.newPos = function() {
+  this.newPos = function () {
     this.gravitySpeed += this.gravity;
     this.x += this.speedX;
     this.y += this.speedY + this.gravitySpeed;
     this.hitBottom();
+    this.hitTop();
   };
-  this.hitBottom = function() {
+  this.hitBottom = function () {
     var rockBottom = myGameArea.canvas.height - this.height;
     if (this.y > rockBottom) {
       this.y = rockBottom;
     }
-  };
+  }
+  this.hitTop = function () {
+    var rockTop = myGameArea.canvas.height
+    if (this.y < 0) {
+      this.y = 0;
+    }
+  }
 }
 
 function Pipe(width, height, color, x, y) {
-    this.width = width
-    this.height = height
-    this.color = color
-    this.x = x
-    this.y = y
-    this.speedX = 0
-    this.speedY = 0
+  this.width = width
+  this.height = height
+  this.color = color
+  this.x = x
+  this.y = y
+  this.speedX = 0
+  this.speedY = 0
 }
 
 function accelerate(n) {
@@ -96,7 +103,7 @@ function accelerate(n) {
 }
 
 function moveRight(n) {
-    myGamePiece.x = n
+  myGamePiece.x = n
 }
 function updateGameArea() {
   myGameArea.clear();
@@ -104,7 +111,13 @@ function updateGameArea() {
   myGamePiece.update();
 }
 
-document.body.onkeypress = function(e) {
+function gameEnd(){
+  myGameArea.clear();
+  myGamePiece.newPos();
+  myGamePiece.update();
+}
+
+document.body.onkeypress = function (e) {
   if (e.keyCode == 32) {
     accelerate(-0.5);
     let i = 100
@@ -112,7 +125,7 @@ document.body.onkeypress = function(e) {
   }
 };
 
-document.body.onkeyup = function(e) {
+document.body.onkeyup = function (e) {
   console.log("up");
   if (e.keyCode == 32) {
     accelerate(0.5);
